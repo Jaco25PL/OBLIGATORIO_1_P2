@@ -12,9 +12,6 @@ public class Jugador {
 
     public Jugador(String username, int edad) {
         if (username == null) {
-            throw new NullPointerException("El nombre no puede ser nulo.");
-        }
-        if (username == null) {
             throw new NullPointerException("El username no puede ser nulo.");
         }
         if (username.trim().isEmpty()) {

@@ -1,13 +1,10 @@
-
 package model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Partida {
 
-    
     private Jugador jugadorBlanco;
     private Jugador jugadorNegro;
     private Tablero tablero;
@@ -27,7 +24,7 @@ public class Partida {
         this.jugadorNegro = jugadorNegro;
         this.configuracion = configuracion;
         this.tablero = new Tablero(); 
-        this.turnoActual = jugadorBlanco;
+        this.turnoActual = jugadorBlanco; 
         this.bandasColocadasEnPartida = 0;
         this.triangulosJugadorBlanco = 0;
         this.triangulosJugadorNegro = 0;
@@ -38,6 +35,7 @@ public class Partida {
         this.movimientosRealizados = 0;
     }
 
+    
     public Jugador getTurnoActual() {
         return turnoActual;
     }
@@ -70,6 +68,7 @@ public class Partida {
         return jugadorAbandono;
     }
 
+
     public boolean procesarJugada(String inputJugada) {
         if (partidaTerminada) {
             System.out.println("La partida ya ha terminado.");
@@ -85,19 +84,23 @@ public class Partida {
 
         if ("H".equals(inputUpper)) {
             mostrarHistorial();
-            return false; // No avanza el turno, solo muestra info
+            return false; 
         }
 
+        
         ParsedJugada jugada = parsearJugadaInput(inputUpper);
         if (jugada == null) {
             System.out.println("Formato de jugada incorrecto. Reingrese.");
-            return true; // Indica que se debe pedir reingreso
-        }
-
-        if (!validarLogicaJugada(jugada)) {
             return true; 
         }
 
+        
+        if (!validarLogicaJugada(jugada)) {
+            
+            return true; 
+        }
+        
+        
         Punto puntoActual = jugada.getOrigen();
         List<Banda> segmentosColocadosEstaJugada = new ArrayList<>();
 
@@ -105,9 +108,13 @@ public class Partida {
             Punto puntoSiguiente = calcularPuntoSiguiente(puntoActual, jugada.getDireccion());
 
             if (puntoSiguiente == null || tablero.getPunto(puntoSiguiente.getColumna(), puntoSiguiente.getFila()) == null) {
+                
                 System.out.println("Error: Movimiento fuera del tablero o a punto inválido en el segmento " + (i+1));
+                
+                
                 return true; 
             }
+            
             
             Punto pA = tablero.getPunto(puntoActual.getColumna(), puntoActual.getFila());
             Punto pB = tablero.getPunto(puntoSiguiente.getColumna(), puntoSiguiente.getFila());
@@ -117,27 +124,33 @@ public class Partida {
                 return true; 
             }
 
-            Banda nuevoSegmento = new Banda(pA, pB, turnoActual);
+            Banda nuevoSegmento = new Banda(pA, pB, turnoActual); 
             
-            tablero.addBanda(nuevoSegmento);
+            
+            
+            
+
+            tablero.addBanda(nuevoSegmento); 
             segmentosColocadosEstaJugada.add(nuevoSegmento);
             this.bandasColocadasEnPartida++;
-
-            int nuevosTriangulos = simularDeteccionTriangulos(nuevoSegmento); // Placeholder
+            int nuevosTriangulos = simularDeteccionTriangulos(nuevoSegmento); 
             if (turnoActual.equals(jugadorBlanco)) {
                 triangulosJugadorBlanco += nuevosTriangulos;
             } else {
                 triangulosJugadorNegro += nuevosTriangulos;
             }
 
-            puntoActual = puntoSiguiente; // Avanzar al siguiente punto para el próximo segmento
+
+            puntoActual = puntoSiguiente; 
         }
         
-        historialJugadas.add(inputJugada); // Guardar la jugada original
+        historialJugadas.add(inputJugada); 
         movimientosRealizados++;
 
+        
         if (verificarFinPartida()) {
             determinarGanadorFinal();
+            
         } else {
             cambiarTurno();
         }
@@ -145,6 +158,8 @@ public class Partida {
     }
 
     private int simularDeteccionTriangulos(Banda banda) {
+        
+        
         return 0; 
     }
 
@@ -155,12 +170,16 @@ public class Partida {
         char colChar = input.charAt(0);
         int fila;
         Direccion dir;
-        int largo = configuracion.isLargoBandasVariable() ? 0 : configuracion.getLargoFijo(); // Default si se omite
+        int largo = configuracion.isLargoBandasVariable() ? 0 : configuracion.getLargoFijo(); 
 
         int dirIndex;
         if (Character.isDigit(input.charAt(1))) { 
             if (input.length() < 3) return null; 
             try {
+                
+                
+                
+                
                 fila = Integer.parseInt(input.substring(1, 2));
                 dirIndex = 2;
             } catch (NumberFormatException e) {
@@ -170,7 +189,7 @@ public class Partida {
             return null; 
         }
         
-        if (input.length() <= dirIndex) return null;
+        if (input.length() <= dirIndex) return null; 
         dir = Direccion.fromChar(input.charAt(dirIndex));
         if (dir == null) return null;
 
@@ -178,13 +197,22 @@ public class Partida {
             try {
                 largo = Integer.parseInt(input.substring(dirIndex + 1));
             } catch (NumberFormatException e) {
+                
+                
+                
+                
                 System.out.println("Largo de banda inválido.");
                 return null;
             }
         } else {
+            
+            
+            
+            
             if (configuracion.isLargoBandasVariable()) {
-                 largo = 4; // Default de la consigna si se omite en modo variable
+                 largo = 4; 
             }
+            
         }
 
 
@@ -200,30 +228,40 @@ public class Partida {
         }
         jugada.setOrigen(origenTablero); 
 
+        
         if (configuracion.isLargoBandasVariable()) {
             if (jugada.getLargo() < ConfiguracionPartida.MIN_LARGO_BANDA || jugada.getLargo() > ConfiguracionPartida.MAX_LARGO_BANDA) {
-                System.out.println("Largo de banda ("+jugada.getLargo()+") inválido. Debe ser entre " 
-                        + ConfiguracionPartida.MIN_LARGO_BANDA + " y " + ConfiguracionPartida.MAX_LARGO_BANDA + ".");
+                System.out.println("Largo de banda ("+jugada.getLargo()+") inválido. Debe ser entre " + ConfiguracionPartida.MIN_LARGO_BANDA + " y " + ConfiguracionPartida.MAX_LARGO_BANDA + ".");
                 return false;
             }
         } else { 
             if (jugada.getLargo() != configuracion.getLargoFijo()) {
-                 System.out.println("Largo de banda debe ser fijo de " + configuracion.getLargoFijo() 
-                         + ", se intentó " + jugada.getLargo());
+                
+                
+                
+                
+                
+                 System.out.println("Largo de banda debe ser fijo de " + configuracion.getLargoFijo() + ", se intentó " + jugada.getLargo());
                  return false;
             }
         }
 
+        
         if (configuracion.isRequiereContacto() && movimientosRealizados > 0) {
             boolean contactoEncontrado = false;
+            
             if (!tablero.getBandasQueUsanPunto(origenTablero).isEmpty()) {
                 contactoEncontrado = true;
             }
+            
+            
+            
             if (!contactoEncontrado) {
                  System.out.println("Jugada inválida: Se requiere contacto con una banda existente y el punto de origen no lo tiene.");
                  return false;
             }
         }
+        
         
         Punto current = origenTablero;
         for (int i = 0; i < jugada.getLargo(); i++) {
@@ -238,9 +276,11 @@ public class Partida {
             }
             current = next;
         }
+
         return true;
     }
 
+    
     private Punto calcularPuntoSiguiente(Punto actual, Direccion dir) {
         if (actual == null || dir == null) return null;
         int filaActual = actual.getFila();
@@ -249,32 +289,35 @@ public class Partida {
         char nuevaCol = colActual;
 
         switch (dir) {
-            case NOROESTE: // Q
+            case NOROESTE: 
                 nuevaFila--;
                 nuevaCol--;
                 break;
-            case NORESTE:  // E
+            case NORESTE:  
                 nuevaFila--;
                 nuevaCol++;
                 break;
-            case ESTE:     // D
+            case ESTE:     
                 nuevaCol += 2;
                 break;
-            case SURESTE:  // C
+            case SURESTE:  
                 nuevaFila++;
-                nuevaCol++; // 
+                nuevaCol++; 
                 break;
-            case SUROESTE: // Z
+            case SUROESTE: 
                 nuevaFila++;
                 nuevaCol--;
                 break;
-            case OESTE:    // A
+            case OESTE:    
                 nuevaCol -= 2;
                 break;
         }
+        
+        
         try {
             return new Punto(nuevaFila, nuevaCol);
         } catch (IllegalArgumentException e) {
+            
             return null; 
         }
     }
@@ -301,15 +344,16 @@ public class Partida {
         if (!partidaTerminada) return; 
         if (jugadorAbandono != null) { 
             ganador = (jugadorAbandono.equals(jugadorBlanco)) ? jugadorNegro : jugadorBlanco;
-        } else {
+        } else { 
             if (triangulosJugadorBlanco > triangulosJugadorNegro) {
                 ganador = jugadorBlanco;
             } else if (triangulosJugadorNegro > triangulosJugadorBlanco) {
                 ganador = jugadorNegro;
             } else {
-                ganador = null; // Empate
+                ganador = null; 
             }
         }
+        
         
         if (ganador != null) {
             ganador.incrementarPartidasGanadas();
@@ -318,11 +362,13 @@ public class Partida {
             Jugador perdedor = ganador.equals(jugadorBlanco) ? jugadorNegro : jugadorBlanco;
             perdedor.resetRachaActual();
             System.out.println("Partida finalizada. Ganador: " + ganador.getUsername());
-        } else if (jugadorAbandono == null) { // Empate sin abandono
+            
+        } else if (jugadorAbandono == null) { 
             jugadorBlanco.resetRachaActual();
             jugadorNegro.resetRachaActual();
             System.out.println("Partida finalizada. Es un empate!");
         }
+        
         if (jugadorAbandono != null) {
              jugadorAbandono.resetRachaActual();
         }
@@ -342,7 +388,7 @@ public class Partida {
         this.partidaTerminada = true;
         this.jugadorAbandono = jugadorQueAbandona;
         System.out.println("El jugador " + jugadorQueAbandona.getUsername() + " ha abandonado la partida.");
-        determinarGanadorFinal();
+        determinarGanadorFinal(); 
     }
 
     private void mostrarHistorial() {
@@ -357,6 +403,7 @@ public class Partida {
         System.out.println("----------------------------");
     }
 
+    
     private static class ParsedJugada {
         private Punto origen; 
         private Direccion direccion;
