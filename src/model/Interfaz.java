@@ -1,5 +1,10 @@
+/*
+ * Autores: [Matías Piedra 354007], [Joaquin Piedra 304804] 
+ */
+
 package model;
 
+// import model.ConfiguracionPartida;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,13 +17,32 @@ public class Interfaz {
     private Scanner scanner;
     private ArrayList<Jugador> jugadoresRegistrados;
     private ConfiguracionPartida configuracionActual;
+    private Partida partidaActual; 
 
+    // constructor de la interfaz.
     public Interfaz() {
         this.scanner = new Scanner(System.in);
         this.jugadoresRegistrados = new ArrayList<>();
-        this.configuracionActual = new ConfiguracionPartida();
+        this.configuracionActual = new ConfiguracionPartida(); // Uses default constructor of ConfiguracionPartida
+        this.partidaActual = null; 
+
+
+        // Test players for debugging
+        try {
+        // Create two test players with different names
+        Jugador jugador1 = new Jugador("Test Player 1", 25);
+        Jugador jugador2 = new Jugador("Test Player 2", 30);
+        
+        // Add them to the registered players list
+        jugadoresRegistrados.add(jugador1);
+        jugadoresRegistrados.add(jugador2);
+        
+    } catch (Exception e) {
+        System.err.println("Error adding test players: " + e.getMessage());
+    }
     }
 
+    // inicia la aplicación.
     public void iniciarAplicacion() {
         mostrarTitulo();
         boolean salir = false;
@@ -52,13 +76,15 @@ public class Interfaz {
         scanner.close();
     }
 
+    // muestra el título.
     private void mostrarTitulo() {
         System.out.println("***************************************************");
         System.out.println("**        TRABAJO DESARROLLADO POR:            **");
-        System.out.println("**  [Matías Piedra 354007], [Joaquin Piedra]   **"); 
+        System.out.println("**  [Matías Piedra 354007], [Joaquin Piedra 304804]   **"); 
         System.out.println("***************************************************");
     }
 
+    // muestra el menú principal.
     private void mostrarMenuPrincipal() {
         System.out.println("\n--- MENÚ PRINCIPAL ---");
         System.out.println("1. Registrar un jugador");
@@ -69,41 +95,46 @@ public class Interfaz {
         System.out.print("Seleccione una opción: ");
     }
 
+    // lee opción del menú.
     private int leerOpcionMenu() {
         int opcion = -1;
         try {
             opcion = scanner.nextInt();
         } catch (InputMismatchException e) {
             System.out.println("Entrada inválida. Por favor, ingrese un número.");
+            
         } finally {
             scanner.nextLine(); 
         }
         return opcion;
     }
 
+    // registra un nuevo jugador.
     private void registrarNuevoJugador() {
         System.out.println("\n--- REGISTRO DE NUEVO JUGADOR ---");
-        String username;
+        String nombre;
         int edad = -1;
 
         while (true) {
-            System.out.print("Ingrese el username del jugador (único): ");
-            username = scanner.nextLine().trim();
-            if (username.isEmpty()) {
-                System.out.println("El username no puede estar vacío.");
+            System.out.print("Ingrese el nombre del jugador (único): ");
+            nombre = scanner.nextLine().trim();
+            if (nombre.isEmpty()) {
+                System.out.println("El nombre no puede estar vacío.");
                 continue;
             }
-            boolean usernameExiste = false;
+
+            boolean nombreExiste = false;
             for (Jugador j : jugadoresRegistrados) {
-                if (j.getUsername().equalsIgnoreCase(username)) { 
-                    usernameExiste = true;
+                if (j.getNombre().equalsIgnoreCase(nombre)) { 
+                    nombreExiste = true;
                     break;
                 }
             }
-            if (!usernameExiste) {
-                break;
+
+            if (!nombreExiste) {
+                break; 
             }
-            System.out.println("El username '" + username + "' ya existe. Por favor, elija otro.");
+            System.out.println("El nombre '" + nombre + "' ya existe. Por favor, elija otro.");
         }
 
         while (true) {
@@ -117,19 +148,20 @@ public class Interfaz {
                 System.out.println("La edad no puede ser negativa.");
             } catch (InputMismatchException e) {
                 System.out.println("Entrada inválida para la edad. Por favor, ingrese un número.");
-                scanner.nextLine();
+                scanner.nextLine(); 
             }
         }
 
         try {
-            Jugador nuevoJugador = new Jugador(username, edad);
+            Jugador nuevoJugador = new Jugador(nombre, edad);
             jugadoresRegistrados.add(nuevoJugador);
-            System.out.println("Jugador '" + nuevoJugador.getUsername() + "' registrado exitosamente.");
+            System.out.println("Jugador '" + nuevoJugador.getNombre() + "' registrado exitosamente.");
         } catch (IllegalArgumentException | NullPointerException e) {
             System.err.println("Error al crear el jugador: " + e.getMessage());
         }
     }
 
+    // configura la partida.
     private void configurarPartida() {
         System.out.println("\n--- CONFIGURACIÓN DE PARTIDA ---");
         System.out.println("Configuración actual: " + configuracionActual);
@@ -155,23 +187,19 @@ public class Interfaz {
         int tempCantBandasFin;
         int tempCantTableros;
 
-        System.out.print("¿Se requiere contacto para nuevas bandas (después del 2do mov.)? (S/N) (Actual: " 
-                + (configuracionActual.isRequiereContacto() ? "Sí" : "No") + "): ");
+        System.out.print("¿Se requiere contacto para nuevas bandas (después del 2do mov.)? (S/N) (Actual: " + (configuracionActual.isRequiereContacto() ? "Sí" : "No") + "): ");
         tempRequiereContacto = scanner.nextLine().trim().equalsIgnoreCase("S");
 
-        System.out.print("¿Largo de bandas variable (1-" + ConfiguracionPartida.MAX_LARGO_BANDA 
-                + ")? (S/N) (Actual: " + (configuracionActual.isLargoBandasVariable() ? "Variable" : "Fijo " 
-                + configuracionActual.getLargoFijo()) + "): ");
+        System.out.print("¿Largo de bandas variable (1-" + configuracionActual.getMaxLargoBandaConstant() + ")? (S/N) (Actual: " + (configuracionActual.isLargoBandasVariable() ? "Variable" : "Fijo " + configuracionActual.getLargoFijo()) + "): ");
         tempLargoVariable = scanner.nextLine().trim().equalsIgnoreCase("S");
 
         if (!tempLargoVariable) {
             while (true) {
-                System.out.print("Ingrese el largo fijo de las bandas (" + ConfiguracionPartida.MIN_LARGO_BANDA 
-                        + "-" + ConfiguracionPartida.MAX_LARGO_BANDA + ") (Actual: " 
-                        + configuracionActual.getLargoFijo() + "): ");
+                System.out.print("Ingrese el largo fijo de las bandas (" + configuracionActual.getMinLargoBandaConstant() + "-" + configuracionActual.getMaxLargoBandaConstant() + ") (Actual: " + configuracionActual.getLargoFijo() + "): ");
                 try {
                     tempLargoFijo = scanner.nextInt();
                     scanner.nextLine();
+                    
                     break;
                 } catch (InputMismatchException e) {
                     System.out.println("Entrada inválida. Ingrese un número.");
@@ -181,9 +209,7 @@ public class Interfaz {
         }
 
         while (true) {
-            System.out.print("Ingrese la cantidad de bandas para finalizar la partida (mínimo " 
-                    + ConfiguracionPartida.MIN_BANDAS_FIN + ") (Actual: " 
-                    + configuracionActual.getCantidadBandasFin() + "): ");
+            System.out.print("Ingrese la cantidad de bandas para finalizar la partida (mínimo " + configuracionActual.getMinBandasFinConstant() + ") (Actual: " + configuracionActual.getCantidadBandasFin() + "): ");
             try {
                 tempCantBandasFin = scanner.nextInt();
                 scanner.nextLine();
@@ -195,9 +221,7 @@ public class Interfaz {
         }
 
         while (true) {
-            System.out.print("Ingrese la cantidad de tableros a mostrar (" + ConfiguracionPartida.MIN_TABLEROS_MOSTRAR 
-                    + "-" + ConfiguracionPartida.MAX_TABLEROS_MOSTRAR + ") (Actual: " 
-                    + configuracionActual.getCantidadTablerosMostrar() + "): ");
+            System.out.print("Ingrese la cantidad de tableros a mostrar (" + configuracionActual.getMinTablerosMostrarConstant() + "-" + configuracionActual.getMaxTablerosMostrarConstant() + ") (Actual: " + configuracionActual.getCantidadTablerosMostrar() + "): ");
             try {
                 tempCantTableros = scanner.nextInt();
                 scanner.nextLine();
@@ -209,6 +233,7 @@ public class Interfaz {
         }
 
         try {
+            
             ConfiguracionPartida nuevaConfig = new ConfiguracionPartida(
                 tempRequiereContacto,
                 tempLargoVariable,
@@ -221,11 +246,11 @@ public class Interfaz {
             System.out.println("Nueva configuración: " + configuracionActual);
         } catch (IllegalArgumentException e) {
             System.err.println("Error en la configuración: " + e.getMessage());
-            System.out.println("No se guardaron los cambios. Se mantiene la configuración anterior: " 
-                    + configuracionActual);
+            System.out.println("No se guardaron los cambios. Se mantiene la configuración anterior: " + configuracionActual);
         }
     }
 
+    // inicia y juega partida.
     private void jugarPartida() {
         System.out.println("\n--- COMIENZO DE PARTIDA ---");
 
@@ -234,77 +259,108 @@ public class Interfaz {
             return;
         }
 
-        System.out.println("Jugadores disponibles (ordenados alfabéticamente por username):");
-
         ArrayList<Jugador> jugadoresOrdenados = new ArrayList<>(jugadoresRegistrados);
-        Collections.sort(jugadoresOrdenados, Comparator.comparing(Jugador::getUsername, String.CASE_INSENSITIVE_ORDER));
+        Collections.sort(jugadoresOrdenados, Comparator.comparing(Jugador::getNombre, String.CASE_INSENSITIVE_ORDER));
 
-        Jugador jugadorBlanco = jugadoresOrdenados.get(0);
-        Jugador jugadorNegro = jugadoresOrdenados.get(1);
-        
-        System.out.println("\nJugador Blanco: " + jugadorBlanco.getUsername());
-        System.out.println("Jugador Negro: " + jugadorNegro.getUsername());
-        System.out.println("\nUsando configuración: " + configuracionActual);
-        System.out.println("\n¡Que comience el juego!");
+        System.out.println("Lista de jugadores disponibles:");
+        for (int i = 0; i < jugadoresOrdenados.size(); i++) {
+            System.out.println((i + 1) + ". " + jugadoresOrdenados.get(i).getNombre());
+        }
 
-        Tablero tablero = new Tablero();
-        
-        boolean partidaTerminada = false;
-        Jugador jugadorActual = jugadorBlanco;
-        int movimientos = 0;
+        Jugador jugador1 = null, jugador2 = null;
+        int indiceJ1 = -1, indiceJ2 = -1;
 
-        while (!partidaTerminada) {
-            System.out.println("\n--- Tablero Actual ---");
-            System.out.println(tablero.toString()); // Mostrar el tablero
-
-            System.out.println("\nTurno de: " + jugadorActual.getUsername() + (jugadorActual == jugadorBlanco ? " (Blancas)" : " (Negras)"));
-            System.out.print("Ingrese su jugada (ej: D1C3 para banda, H para historial, X para abandonar): ");
-            String entrada = scanner.nextLine().trim().toUpperCase();
-
-            if (entrada.equals("X")) {
-                System.out.println(jugadorActual.getUsername() + " ha abandonado la partida.");
-                partidaTerminada = true;
-                continue;
-            } else if (entrada.equals("H")) {
-                System.out.println("Historial de jugadas");
-                continue; 
-            }
-
-            System.out.println("Procesando jugada '" + entrada + "...");
-            if (movimientos == 0 && tablero.getPunto('D',1) != null && tablero.getPunto('C',2) != null) {
-                try {
-                    Banda bandaSimulada = new Banda(tablero.getPunto('D',1), tablero.getPunto('C',2), jugadorActual);
-                    tablero.addBanda(bandaSimulada);
-                    System.out.println("Banda simulada D1-C2 colocada.");
-                } catch (Exception e) { System.out.println("Error al simular banda: " + e.getMessage());}
-            } else if (movimientos == 1 && tablero.getPunto('F',1) != null && tablero.getPunto('E',2) != null) {
-                 try {
-                    Banda bandaSimulada2 = new Banda(tablero.getPunto('F',1), tablero.getPunto('E',2), jugadorActual);
-                    tablero.addBanda(bandaSimulada2);
-                    System.out.println("Banda simulada F1-E2 colocada.");
-                } catch (Exception e) { System.out.println("Error al simular banda: " + e.getMessage());}
-            }
-
-
-            movimientos++;
-
-            if (movimientos >= 5) { 
-                System.out.println("\nSimulación de partida terminada después de " + movimientos + " movimientos.");
-                partidaTerminada = true;
-            }
-
-            if (!partidaTerminada) {
-                jugadorActual = (jugadorActual == jugadorBlanco) ? jugadorNegro : jugadorBlanco;
+        while (jugador1 == null) {
+            System.out.print("Seleccione el número del primer jugador (será Blanco □): ");
+            try {
+                indiceJ1 = scanner.nextInt() - 1;
+                scanner.nextLine(); 
+                if (indiceJ1 >= 0 && indiceJ1 < jugadoresOrdenados.size()) {
+                    jugador1 = jugadoresOrdenados.get(indiceJ1);
+                } else {
+                    System.out.println("Número de jugador inválido.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Entrada inválida. Ingrese un número.");
+                scanner.nextLine();
             }
         }
 
-        System.out.println("\n--- Fin de la Partida ---");
-        System.out.println(tablero.toString()); // Mostrar tablero final
-
+        while (jugador2 == null) {
+            System.out.print("Seleccione el número del segundo jugador (será Negro ■): ");
+            try {
+                indiceJ2 = scanner.nextInt() - 1;
+                scanner.nextLine(); 
+                if (indiceJ2 >= 0 && indiceJ2 < jugadoresOrdenados.size()) {
+                    if (indiceJ2 == indiceJ1) {
+                        System.out.println("Los jugadores deben ser diferentes.");
+                    } else {
+                        jugador2 = jugadoresOrdenados.get(indiceJ2);
+                    }
+                } else {
+                    System.out.println("Número de jugador inválido.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Entrada inválida. Ingrese un número.");
+                scanner.nextLine();
+            }
+        }
         
-        System.out.println("La lógica completa de juego y determinación de ganador aún no está implementada.");
+        Jugador jugadorBlanco = jugador1;
+        Jugador jugadorNegro = jugador2;
+
+        System.out.println("Jugador Blanco □: " + jugadorBlanco.getNombre());
+        System.out.println("Jugador Negro ■: " + jugadorNegro.getNombre());
+        System.out.println("Usando configuración: " + configuracionActual);
+        
+        partidaActual = new Partida(jugadorBlanco, jugadorNegro, configuracionActual);
+        System.out.println("\n¡Que comience el juego!");
+
+
+        while (partidaActual != null && !partidaActual.isPartidaTerminada()) {
+            System.out.println("\n--- Tablero Actual ---");
+            System.out.println(partidaActual.getTablero().toString()); 
+
+            System.out.println(jugadorBlanco.getNombre() + " (Blancas □): " + partidaActual.getTriangulosJugadorBlanco() + " triángulos.");
+            System.out.println(jugadorNegro.getNombre() + " (Negras ■): " + partidaActual.getTriangulosJugadorNegro() + " triángulos.");
+            
+            int bandasColocadas = partidaActual.getBandasColocadasEnPartida(); 
+            System.out.println("Bandas colocadas: " + bandasColocadas + "/" + configuracionActual.getCantidadBandasFin());
+            
+            System.out.println("Turno de: " + partidaActual.getTurnoActual().getNombre() + 
+            (partidaActual.getTurnoActual().equals(jugadorBlanco) ? " (Blanco □)" : " (Negro ■)"));
+            
+            String ejemploCantidadStr = Integer.toString(configuracionActual.getLargoFijo());
+            System.out.print("Ingrese su jugada (ej: D1C" + ejemploCantidadStr + " para banda, H para historial, X para abandonar): ");
+            String entrada = scanner.nextLine().trim(); 
+
+            partidaActual.procesarJugada(entrada);
+            
+        }
+        
+        System.out.println("\n--- Fin de la Partida ---");
+        if (partidaActual != null && partidaActual.getTablero() != null) {
+             System.out.println(partidaActual.getTablero().toString()); 
+        }
+
+        if (partidaActual != null) {
+            if (partidaActual.getJugadorAbandono() != null) {
+                System.out.println("Partida terminada por abandono de " + partidaActual.getJugadorAbandono().getNombre() + ".");
+            }
+            Jugador ganador = partidaActual.getGanador();
+            if (ganador != null) {
+                System.out.println("¡El ganador es " + ganador.getNombre() + "!");
+                
+                
+            } else if (partidaActual.getJugadorAbandono() == null && partidaActual.isPartidaTerminada()) { 
+                
+                System.out.println("¡La partida es un empate!");
+            }
+        }
+        partidaActual = null; 
     }
 
+    // muestra el ranking.
     private void mostrarRanking() {
         System.out.println("\n--- RANKING DE JUGADORES ---");
         if (jugadoresRegistrados.isEmpty()) {
@@ -313,6 +369,7 @@ public class Interfaz {
         }
 
         ArrayList<Jugador> ranking = new ArrayList<>(jugadoresRegistrados);
+        
         Collections.sort(ranking, new Comparator<Jugador>() {
             @Override
             public int compare(Jugador j1, Jugador j2) {
@@ -320,23 +377,23 @@ public class Interfaz {
                 if (comparacionGanadas != 0) {
                     return comparacionGanadas;
                 }
-                return j1.getUsername().compareToIgnoreCase(j2.getUsername());
+                return j1.getNombre().compareToIgnoreCase(j2.getNombre());
             }
         });
 
-        System.out.println("Pos. | Username         | Edad | Ganadas | Racha Act. | Mejor Racha");
-        System.out.println("-----------------------------------------------------------------");
+        System.out.println("Pos. | Nombre            | Edad | Ganadas | Racha Act. | Mejor Racha");
+        System.out.println("---------------------------------------------------------------");
         for (int i = 0; i < ranking.size(); i++) {
             Jugador j = ranking.get(i);
             System.out.printf("%-4d | %-16s | %-4d | %-7d | %-10d | %-11d\n",
                     (i + 1),
-                    j.getUsername(),
+                    j.getNombre(),
                     j.getEdad(),
                     j.getPartidasGanadas(),
                     j.getRachaActualVictorias(),
                     j.getMejorRachaVictorias());
         }
-        System.out.println("-----------------------------------------------------------------");
+        System.out.println("---------------------------------------------------------------");
 
         int rachaMasLarga = 0;
         for (Jugador j : jugadoresRegistrados) {
@@ -350,7 +407,7 @@ public class Interfaz {
             List<String> jugadoresConMejorRacha = new ArrayList<>();
             for (Jugador j : jugadoresRegistrados) {
                 if (j.getMejorRachaVictorias() == rachaMasLarga) {
-                    jugadoresConMejorRacha.add(j.getUsername());
+                    jugadoresConMejorRacha.add(j.getNombre());
                 }
             }
             System.out.println(String.join(", ", jugadoresConMejorRacha));
@@ -359,10 +416,12 @@ public class Interfaz {
         }
     }
 
+    // termina el programa.
     private void terminarPrograma() {
         System.out.println("\nGracias por jugar a Triángulos. ¡Hasta pronto!");
     }
 
+    // espera enter para continuar.
     private void presioneEnterParaContinuar() {
         System.out.print("\nPresione Enter para continuar...");
         scanner.nextLine(); 

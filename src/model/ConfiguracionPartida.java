@@ -1,18 +1,23 @@
+/*
+ * Autores: [Matías Piedra 354007], [Joaquin Piedra 304804] 
+ */
+
 package model;
 
 public class ConfiguracionPartida {
 
-    public static final int MAX_TABLEROS_MOSTRAR = 4;
-    public static final int MIN_TABLEROS_MOSTRAR = 1;
-    public static final int MIN_LARGO_BANDA = 1;
-    public static final int MAX_LARGO_BANDA = 4;
-    public static final int MIN_BANDAS_FIN = 1; // Mínimo razonable
+    // Changed from public static final to private instance fields, initialized with original values
+    private int maxTablerosMostrar = 4;
+    private int minTablerosMostrar = 1;
+    private int minLargoBanda = 1;
+    private int maxLargoBanda = 4;
+    private int minBandasFin = 1; 
 
-    public static final boolean DEFAULT_REQUIERE_CONTACTO = false;
-    public static final boolean DEFAULT_LARGO_VARIABLE = false;
-    public static final int DEFAULT_LARGO_FIJO = 4;
-    public static final int DEFAULT_CANTIDAD_BANDAS_FIN = 10;
-    public static final int DEFAULT_CANTIDAD_TABLEROS = 1;
+    private boolean defaultRequiereContacto = false;
+    private boolean defaultLargoVariable = false;
+    private int defaultLargoFijo = 4;
+    private int defaultCantidadBandasFin = 10;
+    private int defaultCantidadTableros = 1;
 
     private boolean requiereContacto;
     private boolean largoBandasVariable;
@@ -20,123 +25,128 @@ public class ConfiguracionPartida {
     private int cantidadBandasFin;
     private int cantidadTablerosMostrar;
 
+    // inicializa con valores predeterminados.
     public ConfiguracionPartida() {
-        this.requiereContacto = DEFAULT_REQUIERE_CONTACTO;
-        this.largoBandasVariable = DEFAULT_LARGO_VARIABLE;
-        this.largoFijo = DEFAULT_LARGO_FIJO;
-        this.cantidadBandasFin = DEFAULT_CANTIDAD_BANDAS_FIN;
-        this.cantidadTablerosMostrar = DEFAULT_CANTIDAD_TABLEROS;
+        this.requiereContacto = this.defaultRequiereContacto;
+        this.largoBandasVariable = this.defaultLargoVariable;
+        this.largoFijo = this.defaultLargoFijo;
+        this.cantidadBandasFin = this.defaultCantidadBandasFin;
+        this.cantidadTablerosMostrar = this.defaultCantidadTableros;
     }
 
-    public ConfiguracionPartida(
-            boolean requiereContacto, 
-            boolean largoBandasVariable, 
-            int largoFijo, 
-            int cantidadBandasFin, 
-            int cantidadTablerosMostrar) {
-        validarLargoFijo(largoFijo);
+    // inicializa con valores personalizados.
+    public ConfiguracionPartida(boolean requiereContacto, boolean largoBandasVariable, int largoFijo, int cantidadBandasFin, int cantidadTablerosMostrar) {
+        validarLargoFijo(largoFijo); // Validation methods will now use instance fields for limits
         validarCantidadBandasFin(cantidadBandasFin);
         validarCantidadTablerosMostrar(cantidadTablerosMostrar);
 
         this.requiereContacto = requiereContacto;
         this.largoBandasVariable = largoBandasVariable;
-        this.largoFijo = largoFijo; // Asignar después de validar
-        this.cantidadBandasFin = cantidadBandasFin; // Asignar después de validar
-        this.cantidadTablerosMostrar = cantidadTablerosMostrar; // Asignar después de validar
+        this.largoFijo = largoFijo; 
+        this.cantidadBandasFin = cantidadBandasFin; 
+        this.cantidadTablerosMostrar = cantidadTablerosMostrar; 
     }
 
+    // valida largo fijo banda.
     private void validarLargoFijo(int largo) {
-        if (largo < MIN_LARGO_BANDA || largo > MAX_LARGO_BANDA) {
-            throw new IllegalArgumentException("El largo fijo de la banda debe estar entre " 
-                    + MIN_LARGO_BANDA + " y " + MAX_LARGO_BANDA + ".");
+        if (largo < this.minLargoBanda || largo > this.maxLargoBanda) {
+            throw new IllegalArgumentException("Largo fijo banda entre " + this.minLargoBanda + " y " + this.maxLargoBanda + ".");
         }
     }
 
+    // valida cantidad bandas fin.
     private void validarCantidadBandasFin(int cantidad) {
-        if (cantidad < MIN_BANDAS_FIN) {
-            throw new IllegalArgumentException("La cantidad de bandas para finalizar debe ser al menos " + MIN_BANDAS_FIN + ".");
+        if (cantidad < this.minBandasFin) {
+            throw new IllegalArgumentException("Cantidad bandas fin al menos " + this.minBandasFin + ".");
         }
     }
 
+    // valida cantidad tableros mostrar.
     private void validarCantidadTablerosMostrar(int cantidad) {
-        if (cantidad < MIN_TABLEROS_MOSTRAR || cantidad > MAX_TABLEROS_MOSTRAR) {
-            throw new IllegalArgumentException("La cantidad de tableros a mostrar debe estar entre " 
-                    + MIN_TABLEROS_MOSTRAR + " y " + MAX_TABLEROS_MOSTRAR + ".");
+        if (cantidad < this.minTablerosMostrar || cantidad > this.maxTablerosMostrar) {
+            throw new IllegalArgumentException("Tableros a mostrar entre " + this.minTablerosMostrar + " y " + this.maxTablerosMostrar + ".");
         }
     }
 
+    // obtiene si requiere contacto.
     public boolean isRequiereContacto() {
         return requiereContacto;
     }
 
+    // establece si requiere contacto.
     public void setRequiereContacto(boolean requiereContacto) {
         this.requiereContacto = requiereContacto;
     }
 
+    // obtiene si largo variable.
     public boolean isLargoBandasVariable() {
         return largoBandasVariable;
     }
 
+    // establece si largo variable.
     public void setLargoBandasVariable(boolean largoBandasVariable) {
         this.largoBandasVariable = largoBandasVariable;
     }
 
+    // obtiene largo fijo banda.
     public int getLargoFijo() { 
         return largoFijo;
     }
 
+    // establece largo fijo banda.
     public void setLargoFijo(int largoFijo) { 
         validarLargoFijo(largoFijo);
         this.largoFijo = largoFijo;
     }
 
+    // obtiene cantidad bandas fin.
     public int getCantidadBandasFin() {
         return cantidadBandasFin;
     }
 
+    // establece cantidad bandas fin.
     public void setCantidadBandasFin(int cantidadBandasFin) {
         validarCantidadBandasFin(cantidadBandasFin);
         this.cantidadBandasFin = cantidadBandasFin;
     }
 
+    // obtiene cantidad tableros mostrar.
     public int getCantidadTablerosMostrar() {
         return cantidadTablerosMostrar;
     }
 
+    // establece cantidad tableros mostrar.
     public void setCantidadTablerosMostrar(int cantidadTablerosMostrar) {
         validarCantidadTablerosMostrar(cantidadTablerosMostrar);
         this.cantidadTablerosMostrar = cantidadTablerosMostrar;
     }
+    
+    // Getters for the new private fields that were constants, if needed externally
+    public int getMinLargoBandaConstant() { return this.minLargoBanda; }
+    public int getMaxLargoBandaConstant() { return this.maxLargoBanda; }
+    public int getMinBandasFinConstant() { return this.minBandasFin; }
+    public int getMinTablerosMostrarConstant() { return this.minTablerosMostrar; }
+    public int getMaxTablerosMostrarConstant() { return this.maxTablerosMostrar; }
 
+
+    // devuelve representación textual configuración.
     @Override
     public String toString() {
-        String largoDesc;
-        if (largoBandasVariable) {
-            largoDesc = "Variable (" + MIN_LARGO_BANDA + "-" + MAX_LARGO_BANDA + ")";
-        } else {
-            largoDesc = "Fijo (" + largoFijo + ")";
-        }
+        String largoDesc = largoBandasVariable ? 
+            "Variable (" + this.minLargoBanda + "-" + this.maxLargoBanda + ")" : 
+            "Fijo (" + largoFijo + ")";
+        String contactoDesc = requiereContacto ? "Sí" : "No";
 
-        String contactoDesc;
-        if (requiereContacto) {
-            contactoDesc = "Sí";
-        } else {
-            contactoDesc = "No";
-        }
-
-        return "ConfiguracionPartida [" +
-               "Requiere Contacto=" + contactoDesc +
-               ", Largo Bandas=" + largoDesc +
-               ", Bandas para Fin=" + cantidadBandasFin +
-               ", Tableros a Mostrar=" + cantidadTablerosMostrar +
-               ']';
+        return String.format("ConfiguracionPartida [Requiere Contacto=%s, Largo Bandas=%s, Bandas para Fin=%d, Tableros a Mostrar=%d]",
+               contactoDesc, largoDesc, cantidadBandasFin, cantidadTablerosMostrar);
     }
 
+    // restablece a valores predeterminados.
     public void resetToDefaults() {
-        this.requiereContacto = DEFAULT_REQUIERE_CONTACTO;
-        this.largoBandasVariable = DEFAULT_LARGO_VARIABLE;
-        this.largoFijo = DEFAULT_LARGO_FIJO;
-        this.cantidadBandasFin = DEFAULT_CANTIDAD_BANDAS_FIN;
-        this.cantidadTablerosMostrar = DEFAULT_CANTIDAD_TABLEROS;
+        this.requiereContacto = this.defaultRequiereContacto;
+        this.largoBandasVariable = this.defaultLargoVariable;
+        this.largoFijo = this.defaultLargoFijo;
+        this.cantidadBandasFin = this.defaultCantidadBandasFin;
+        this.cantidadTablerosMostrar = this.defaultCantidadTableros;
     }
 }

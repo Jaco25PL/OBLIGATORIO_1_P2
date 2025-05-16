@@ -1,31 +1,31 @@
+/*
+ * Autores: [Matías Piedra 354007], [Joaquin Piedra 304804] 
+ */
+
 package model;
 
 public class Jugador {
 
-//    private final String nombre;
-    private final String username; 
+    private final String nombre; 
     private final int edad;
 
     private int partidasGanadas;
     private int rachaActualVictorias;
     private int mejorRachaVictorias;
 
-    public Jugador(String username, int edad) {
-        if (username == null) {
-            throw new NullPointerException("El username no puede ser nulo.");
+    // crea un nuevo jugador.
+    public Jugador(String nombre, int edad) {
+        if (nombre == null) {
+            throw new NullPointerException("El nombre no puede ser nulo.");
         }
-        if (username.trim().isEmpty()) {
+        if (nombre.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre no puede estar vacío.");
-        }
-        if (username.trim().isEmpty()) {
-             throw new IllegalArgumentException("El username no puede estar vacío."); // Corregido
         }
         if (edad < 0) {
             throw new IllegalArgumentException("La edad no puede ser negativa.");
         }
 
-//        this.nombre = nombre;
-        this.username = username;
+        this.nombre = nombre;
         this.edad = edad;
 
         this.partidasGanadas = 0;
@@ -33,30 +33,32 @@ public class Jugador {
         this.mejorRachaVictorias = 0;
     }
 
-//    public String getNombre() {
-//        return nombre;
-//    }
-
-    public String getUsername() {
-        return username;
+    // obtiene el nombre.
+    public String getNombre() {
+        return nombre;
     }
 
+    // obtiene la edad.
     public int getEdad() {
         return edad;
     }
 
+    // obtiene partidas ganadas.
     public int getPartidasGanadas() {
         return partidasGanadas;
     }
 
+    // obtiene racha actual victorias.
     public int getRachaActualVictorias() {
         return rachaActualVictorias;
     }
 
+    // obtiene mejor racha victorias.
     public int getMejorRachaVictorias() {
         return mejorRachaVictorias;
     }
 
+    // incrementa ganadas y actualiza rachas.
     public void incrementarPartidasGanadas() {
         this.partidasGanadas++;
         this.rachaActualVictorias++;
@@ -65,45 +67,42 @@ public class Jugador {
         }
     }
 
-    
+    // incrementa racha actual de victorias.
     public void incrementarRachaActual() {
         this.rachaActualVictorias++;
     }
 
+    // actualiza mejor racha de victorias.
     public void actualizarRachaMaxima() {
         if (this.rachaActualVictorias > this.mejorRachaVictorias) {
             this.mejorRachaVictorias = this.rachaActualVictorias;
         }
     }
 
+    // reinicia racha actual de victorias.
     public void resetRachaActual() { 
         this.rachaActualVictorias = 0;
     }
 
+    // compara este jugador con otro.
     @Override
     public boolean equals(Object o) {
-        boolean sonIguales = false;
-        if (this == o) {
-            sonIguales = true;
-        } else if (o != null && this.getClass() == o.getClass()) {
-            Jugador otroJugador = (Jugador) o;
-            if (this.username != null) {
-                 sonIguales = this.username.equals(otroJugador.username);
-            } else {
-                 sonIguales = (otroJugador.username == null);
-            }
-        }
-        return sonIguales;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Jugador jugador = (Jugador) o;
+        return nombre.equals(jugador.nombre); // Asumimos que nombre no es nulo por constructor
     }
 
+    // genera código hash para jugador.
     @Override
     public int hashCode() {
-        return (username == null) ? 0 : username.hashCode();
+        return nombre.hashCode(); // nombre no puede ser nulo debido a la validación del constructor
     }
 
+    // devuelve datos textuales del jugador.
     @Override
     public String toString() {
-        return username + " (Edad: " + edad
+        return nombre + " (Edad: " + edad
                 + ", Victorias: " + partidasGanadas
                 + ", Racha Actual: " + rachaActualVictorias
                 + ", Mejor Racha: " + mejorRachaVictorias + ")";
